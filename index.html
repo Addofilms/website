@@ -1,0 +1,1148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Addo Studios</title>
+<meta name="description" content="Addo Studios — event films, spec commercials and CGI from Toronto.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Layout: dark, grainy "screening room" — editorial 12-column reel with staggered, offset frames */
+  :root {
+    --bg: #161616;
+    --bg-2: #1e1e1f;
+    --ink: #f1eee8;
+    --muted: rgba(241, 238, 232, .58);
+    --line: rgba(241, 238, 232, .12);
+    --mint: #9ccdaa;
+    --honey: #f2c14e;
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); font-family: var(--display); }
+  body { -webkit-font-smoothing: antialiased; }
+  body.locked { overflow: hidden; }
+  a { color: inherit; }
+  img { max-width: 100%; }
+
+  /* film grain over the whole site */
+  body::after {
+    content: ""; position: fixed; inset: -50%; z-index: 40; pointer-events: none; opacity: .09;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain 1s steps(6) infinite;
+  }
+  @keyframes grain {
+    0% { transform: translate(0, 0); } 20% { transform: translate(-3%, 2%); } 40% { transform: translate(2%, -4%); }
+    60% { transform: translate(-4%, -1%); } 80% { transform: translate(3%, 3%); } 100% { transform: translate(0, 0); }
+  }
+
+  /* ---------- INTRO ---------- */
+  #intro { position: fixed; inset: 0; z-index: 50; cursor: none; touch-action: none; background: var(--bg); }
+  #intro.gone { display: none; }
+  #intro.opening { background: transparent; }
+  #field { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .intro-ui {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; gap: 1.6rem; pointer-events: none;
+  }
+  .intro-ui > * { opacity: 0; transform: translateY(14px); transition: opacity 1.1s ease, transform 1.1s cubic-bezier(.2,.8,.2,1); }
+  .intro-ui.show > * { opacity: 1; transform: none; }
+  .intro-ui.show .enter { transition-delay: .25s; pointer-events: auto; }
+  .intro-ui.hide > * { opacity: 0 !important; transition: opacity .35s; transition-delay: 0s !important; }
+  .wordmark { font-family: var(--mono); font-size: clamp(.72rem, 2.2vw, .85rem); letter-spacing: .5em; text-transform: uppercase; margin-right: -.5em; color: var(--muted); }
+  .enter {
+    font-family: var(--display); font-stretch: 118%; font-weight: 600; font-size: .9rem; letter-spacing: .38em; text-transform: uppercase;
+    color: var(--ink); background: rgba(22, 22, 22, .6); backdrop-filter: blur(6px); cursor: pointer;
+    border: 1px solid rgba(241,238,232,.4); border-radius: 999px; padding: 1.1rem 2.6rem 1.1rem 3rem;
+    position: relative; overflow: hidden; isolation: isolate; transition: color .4s, border-color .4s;
+  }
+  .enter::before {
+    content: ""; position: absolute; inset: 0; background: var(--ink); border-radius: inherit;
+    transform: scaleX(0); transform-origin: left; transition: transform .45s cubic-bezier(.7,0,.2,1); z-index: -1;
+  }
+  .enter:hover, .enter:focus-visible { color: var(--bg); border-color: var(--ink); outline: none; }
+  .enter:hover::before, .enter:focus-visible::before { transform: scaleX(1); }
+  .skip { position: absolute; right: 1.2rem; bottom: calc(1.2rem + env(safe-area-inset-bottom, 0px)); font-family: var(--mono); font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); background: none; border: 0; cursor: pointer; opacity: .7; }
+  .skip:hover { opacity: 1; }
+  @media (hover: none) { #intro { cursor: auto; } }
+
+  /* ---------- HEADER ---------- */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: calc(1rem + env(safe-area-inset-top, 0px)) clamp(1rem, 4vw, 3rem) 1rem;
+    background: rgba(22, 22, 22, .78); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: .8rem; text-decoration: none; font-family: var(--mono); letter-spacing: .28em; text-transform: uppercase; font-size: .74rem; }
+  .brand svg { width: 32px; height: 32px; }
+  nav { display: flex; gap: 1.6rem; }
+  nav a { text-decoration: none; font-family: var(--mono); font-size: .76rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); transition: color .2s; }
+  nav a:hover { color: var(--ink); }
+
+  /* faint ADDO spelled by rolling shapes, behind the portfolio */
+  #bgword { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; display: block; }
+  main, footer { position: relative; z-index: 1; }
+  main { max-width: 1360px; margin: 0 auto; padding-inline: clamp(1rem, 4vw, 3rem); }
+
+  /* ---------- HERO ---------- */
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem 4rem; align-items: end; padding-block: clamp(3rem, 9vw, 7.5rem) clamp(2.5rem, 6vw, 4.5rem); }
+  .eyebrow { font-family: var(--mono); font-size: .74rem; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.6rem; display: flex; gap: .7rem; align-items: center; }
+  .eyebrow i { width: 8px; height: 8px; border-radius: 50%; background: #e2564a; box-shadow: 0 0 10px #e2564a; animation: rec 1.6s steps(1) infinite; }
+  @keyframes rec { 50% { opacity: .15; } }
+  .hero h1 { font-stretch: 122%; font-weight: 640; font-size: clamp(2.5rem, 8.2vw, 7.6rem); line-height: .94; letter-spacing: -.035em; text-wrap: balance; }
+  .hero h1 .ln { display: block; overflow: hidden; padding-bottom: .06em; }
+  .hero h1 .ln > span { display: inline-block; }
+  .hero h1 em { font-style: normal; font-stretch: 70%; font-weight: 300; color: var(--mint); }
+  .hero-side { display: grid; gap: 1.4rem; max-width: 30ch; padding-bottom: .6rem; }
+  .hero-side p { color: var(--muted); line-height: 1.6; font-size: 1rem; }
+  .disciplines { list-style: none; display: grid; gap: .45rem; font-family: var(--mono); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
+  .disciplines li { display: flex; gap: .7rem; align-items: center; }
+  .disciplines li::before { content: ""; width: 7px; height: 7px; background: var(--ink); }
+  .disciplines li:nth-child(2)::before { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+  .disciplines li:nth-child(3)::before { border-radius: 0 7px 7px 0; }
+  .disciplines li:nth-child(4)::before { border-radius: 50%; }
+
+  html.js-intro:not(.revealed) .hero h1 .ln > span { transform: translateY(105%); }
+  html.revealed .hero h1 .ln > span { animation: rise 1.1s cubic-bezier(.2,.8,.2,1) both; }
+  html.revealed .hero h1 .ln:nth-child(2) > span { animation-delay: .08s; }
+  html.revealed .hero h1 .ln:nth-child(3) > span { animation-delay: .16s; }
+  @keyframes rise { from { transform: translateY(105%); } to { transform: none; } }
+
+  /* ---------- MARQUEE ---------- */
+  .marquee { border-block: 1px solid var(--line); overflow: hidden; padding-block: 1rem; margin-inline: calc(-1 * clamp(1rem, 4vw, 3rem)); }
+  .marquee-track { display: flex; width: max-content; animation: slide 38s linear infinite; }
+  .marquee span { font-stretch: 122%; font-weight: 500; font-size: clamp(1.1rem, 2.6vw, 1.7rem); white-space: nowrap; padding-right: 2.2rem; display: inline-flex; align-items: center; gap: 2.2rem; color: var(--muted); }
+  .marquee span b { font-weight: 500; color: var(--ink); }
+  .marquee .g { width: .55em; height: .55em; background: var(--honey); display: inline-block; }
+  .marquee .g.t { clip-path: polygon(50% 0, 100% 100%, 0 100%); background: var(--mint); }
+  .marquee .g.d { border-radius: 0 1em 1em 0; background: #e87c60; }
+  .marquee .g.o { border-radius: 50%; background: var(--ink); }
+  @keyframes slide { to { transform: translateX(-50%); } }
+
+  /* ---------- WORK ---------- */
+  .work-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding-block: clamp(3.5rem, 8vw, 6rem) clamp(1.8rem, 4vw, 3rem); }
+  .work-head h2 { font-stretch: 122%; font-weight: 600; font-size: clamp(1.6rem, 4vw, 2.8rem); letter-spacing: -.02em; }
+  .work-head span { font-family: var(--mono); font-size: .76rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+
+  .reel { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(1rem, 2.4vw, 2rem); row-gap: clamp(3rem, 7vw, 6.5rem); align-items: start; }
+  .proj { min-width: 0; }
+  .proj.off { margin-top: clamp(4rem, 14vw, 12rem); }
+  .proj-media {
+    position: relative; display: block; width: 100%; max-width: 100%; overflow: hidden; border: 0; padding: 0; cursor: none;
+    background: var(--bg-2); border-radius: 3px; color: inherit; font: inherit;
+  }
+  .proj-media img { position: absolute; inset: -8% 0; width: 100%; height: 116%; object-fit: cover; display: block; transform: translateY(var(--py, 0px)) scale(1.02); transition: transform .9s cubic-bezier(.2,.8,.2,1), filter .6s; filter: saturate(.85) contrast(1.02); will-change: transform; }
+  .proj-media:hover img, .proj-media:focus-visible img { transform: translateY(var(--py, 0px)) scale(1.07); filter: saturate(1.05); }
+  .proj-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.45)); pointer-events: none; }
+  .proj-media:focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; }
+  .play {
+    position: absolute; left: 0; top: 0; z-index: 2; width: 96px; height: 96px; margin: -48px 0 0 -48px; border-radius: 50%;
+    display: grid; place-items: center; background: var(--ink); color: var(--bg);
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; padding-left: .2em;
+    transform: translate(var(--cx, 50%), var(--cy, 50%)) scale(0); transition: transform .35s cubic-bezier(.2,.8,.2,1); pointer-events: none;
+  }
+  .proj-media:hover .play { transform: translate(var(--cx), var(--cy)) scale(1); }
+  .slate { position: absolute; left: 1rem; bottom: .9rem; z-index: 1; font-family: var(--mono); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: rgba(241,238,232,.85); }
+  .proj-info { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .35rem 1.2rem; padding-top: 1.1rem; }
+  .proj-info h3 { font-stretch: 116%; font-weight: 560; font-size: clamp(1.15rem, 2vw, 1.6rem); letter-spacing: -.01em; line-height: 1.15; text-wrap: balance; }
+  .proj-info .tag { font-family: var(--mono); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--mint); padding-top: .4rem; white-space: nowrap; }
+  .proj-info p { grid-column: 1 / -1; color: var(--muted); font-size: .94rem; line-height: 1.6; max-width: 58ch; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+  /* reveal on scroll (visible by default when JS is off) */
+  html.js .proj:not(.in) .proj-media { clip-path: inset(14% 6% 14% 6%); opacity: .2; }
+  html.js .proj:not(.in) .proj-info { opacity: 0; transform: translateY(18px); }
+  .proj .proj-media { transition: clip-path 1.1s cubic-bezier(.7,0,.2,1), opacity .8s; }
+  .proj .proj-info { transition: opacity .9s ease .25s, transform .9s cubic-bezier(.2,.8,.2,1) .25s; }
+
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: minmax(0, 1fr); }
+    .reel { row-gap: 3rem; }
+    .proj { grid-column: 1 / -1 !important; margin-top: 0 !important; }
+    .proj .proj-media { aspect-ratio: 16 / 9 !important; }
+    .proj:first-child .proj-media { aspect-ratio: 4 / 3 !important; }
+    .play { transform: translate(1rem, calc(100% - 1rem)) scale(.6) !important; left: auto; right: 0; top: auto; bottom: 0; margin: 0; transform-origin: 100% 100%; }
+    .proj-media { cursor: pointer; }
+    nav a:first-child { display: none; }
+  }
+  @media (hover: none) { .proj-media { cursor: pointer; } }
+
+  /* ---------- CONTACT ---------- */
+  .contact { margin-top: clamp(5rem, 12vw, 10rem); padding-block: clamp(2.5rem, 6vw, 4rem); border-top: 1px solid var(--line); display: grid; gap: 1.5rem; }
+  .contact .eyebrow { margin-bottom: 0; }
+  .contact h2 { font-stretch: 122%; font-weight: 620; font-size: clamp(2.2rem, 8vw, 6.4rem); line-height: .95; letter-spacing: -.035em; }
+  .reach { display: flex; flex-wrap: wrap; gap: 1rem 2.5rem; }
+  .contact a.mail { justify-self: start; font-family: var(--mono); font-size: clamp(.95rem, 2.4vw, 1.25rem); text-decoration: none; border-bottom: 1px solid var(--muted); padding-bottom: .25rem; word-break: break-all; }
+  .contact a.mail:hover { border-color: var(--honey); color: var(--honey); }
+  footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .6rem; color: var(--muted); font-family: var(--mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; padding: 2rem clamp(1rem, 4vw, 3rem) calc(2.5rem + env(safe-area-inset-bottom, 0px)); max-width: 1360px; margin: 0 auto; }
+
+  /* ---------- VIDEO POP-UP ---------- */
+  #player {
+    position: fixed; inset: 0; z-index: 60; display: grid; align-items: start; overflow-y: auto;
+    padding: clamp(3.5rem, 8vh, 5rem) 1rem 3rem;
+    background: rgba(10, 10, 10, .97); opacity: 0; visibility: hidden; transition: opacity .35s, visibility 0s linear .35s;
+  }
+  #player.open { opacity: 1; visibility: visible; transition: opacity .35s; }
+  .player-inner { width: min(1100px, 100%); margin: 0 auto; }
+  .frame { width: 100%; aspect-ratio: 16 / 9; }
+  .frame iframe { width: 100%; height: 100%; border: 0; border-radius: 3px; background: #000; }
+  .info { max-width: 68ch; padding-top: 1.6rem; }
+  .info-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1rem; margin-bottom: .9rem; }
+  .info h2 { font-stretch: 116%; font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 560; }
+  .info-head span { color: var(--mint); font-family: var(--mono); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; }
+  .info p { color: rgba(241,238,232,.8); line-height: 1.65; margin-top: .8rem; }
+  .info .credits { white-space: pre-line; color: var(--muted); font-family: var(--mono); font-size: .8rem; line-height: 1.8; border-top: 1px solid var(--line); padding-top: 1rem; margin-top: 1.4rem; }
+  .close {
+    position: fixed; top: calc(1rem + env(safe-area-inset-top, 0px)); right: 1rem; z-index: 2; width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid var(--line); background: rgba(10,10,10,.6); color: var(--ink); font-size: 1.4rem; cursor: pointer;
+  }
+  .close:hover { background: var(--ink); color: var(--bg); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
+    .marquee-track { animation: none; }
+  }
+</style>
+<script>document.documentElement.classList.add("js", "js-intro");</script>
+</head>
+<body class="locked">
+
+<!-- ============ INTRO / ENTER SCREEN ============ -->
+<div id="intro">
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="intro-ui" id="introUi">
+    <div class="wordmark">Addo Studios</div>
+    <button class="enter" id="enterBtn">Enter</button>
+  </div>
+  <button class="skip" id="skipBtn">Skip intro</button>
+</div>
+
+<!-- ============ PORTFOLIO ============ -->
+<canvas id="bgword" aria-hidden="true"></canvas>
+<header>
+  <a class="brand" href="#top" aria-label="Addo Studios home">
+    <svg viewBox="0 0 200 200" aria-hidden="true">
+      <polygon points="10,95 50,10 90,95" fill="#f1eee8"/>
+      <path d="M110,10 A42.5,42.5 0 0 1 110,95 Z" fill="#f1eee8"/>
+      <path d="M95,105 A42.5,42.5 0 0 0 95,190 Z" fill="#f1eee8"/>
+      <circle cx="150" cy="147.5" r="42.5" fill="#f1eee8"/>
+    </svg>
+    Addo Studios
+  </a>
+  <nav><a href="#work">Work</a><a href="#contact">Contact</a></nav>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div>
+      <div class="eyebrow"><i></i> Addo Studios · Toronto, ON</div>
+      <h1><span class="ln"><span>Stories, shot</span></span><span class="ln"><span>and built</span></span><span class="ln"><span><em>with care.</em></span></span></h1>
+    </div>
+    <div class="hero-side">
+      <p>A Toronto video and 3D studio making films for brands, nonprofits and artists.</p>
+      <ul class="disciplines">
+        <li>Event films</li>
+        <li>Spec commercials</li>
+        <li>Brand films</li>
+        <li>CGI &amp; Blender</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true"><div class="marquee-track" id="marquee"></div></div>
+
+  <section id="work" aria-labelledby="workTitle">
+    <div class="work-head"><h2 id="workTitle">Selected work</h2><span id="workCount"></span></div>
+    <div class="reel" id="reel"></div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="eyebrow"><i></i> Now booking</div>
+    <h2>Let’s make<br>something.</h2>
+    <div class="reach">
+      <a class="mail" id="mailLink" href="#"></a>
+      <a class="mail" id="phoneLink" href="#"></a>
+    </div>
+  </section>
+</main>
+
+<footer><span>© <span id="yr"></span> Addo Studios</span><span>Toronto, Ontario</span></footer>
+
+<div id="player" role="dialog" aria-modal="true" aria-label="Video player">
+  <button class="close" id="closeBtn" aria-label="Close video">×</button>
+  <div class="player-inner">
+    <div class="frame" id="frame"></div>
+    <div class="info" id="info"></div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   EDIT HERE — this is the only part you need to touch.
+   To add a video: copy one { ... } block, paste the YouTube link, title,
+   category, description (blank line = new paragraph) and credits.
+   The layout arranges itself — order here is the order on the page.
+   ===================================================================== */
+const CONTACT_EMAIL = "hello@addostudios.com";
+const CONTACT_PHONE = "416-939-6855";
+
+const VIDEOS = [
+  {
+    title: "Rev’n’Run — Honda Indy 5K",
+    tag: "Event Film",
+    url: "https://www.youtube.com/watch?v=PSUbjrnlICk",
+    desc: `An event film capturing the energy of a charity 5K race held on the track at the Toronto Honda Indy. Framed by competition but grounded in community, the piece begins with the intensity of runners and clubs going head-to-head before shifting toward the larger spirit of the event, connection, celebration, and collective purpose.
+
+Created in support of the Parkdale Food Bank, the film highlights the atmosphere around the race as much as the race itself, focusing on the people, the momentum, and the sense of togetherness that defines running culture.`,
+    credits: `Directed and produced by Simran Dhaliwal of Addo Studios
+Captured with the support of a wider production team`,
+  },
+  {
+    title: "Salomon — Phantasm 2",
+    tag: "Spec Ad",
+    url: "https://www.youtube.com/watch?v=gNDcrKwQsfQ",
+    desc: `A Toronto-shot spec ad built around long-distance runner Asia Dwyer. Beginning with a short reflection on appreciation and privilege, the film shifts into a sequence of intimate, performance-led visuals focused on movement, ritual, and endurance.`,
+    credits: `Addo Studios
+Directed and produced by Simran Dhaliwal and Carlos Cajina
+Sponsored by Rev’n’Run Charity
+Special thanks to Asia Dwyer, Kevin Silva, and Heather Paige.`,
+  },
+  {
+    title: "Zerno Z2",
+    tag: "CGI Spec Commercial",
+    url: "https://www.youtube.com/watch?v=s4TwjrSCtzU",
+    desc: `A one-minute cinematic spec commercial built around a complete 3D recreation of the Zerno Z2 grinder. Created entirely in Blender using online reference materials, the project presents the grinder through a clean, elevated visual language that reflects the precision and standards of world-class coffee preparation.
+
+Developed over two weeks in Blender 4.5.1, the film highlights the grinder’s industry-leading features through detailed animation, controlled lighting, and a refined, product-focused approach.`,
+    credits: `VFX by Simran Dhaliwal of Addo Studios
+Directed and produced by Addo Studios`,
+  },
+  {
+    title: "Luxury Retreat — Muskoka",
+    tag: "Event Film",
+    url: "https://www.youtube.com/watch?v=7fiV0sMngF4",
+    desc: `A three-day event film capturing a luxury wellness retreat in Muskoka, centered on connection, healing, and rest. Featuring a naturopathic doctor and wellness expert, the piece highlights the elegance of the experience through medical wellness treatments, yoga, breathwork, nourishing food, and the natural beauty of the region.`,
+    credits: `Produced and directed by Addo Studios and Simran Dhaliwal
+Special thanks to Seth Mohan.`,
+  },
+  {
+    title: "Alter — Mindfulness Session",
+    tag: "Brand Film",
+    url: "https://www.youtube.com/watch?v=bl9wsEGy78w",
+    desc: `A Toronto-shot film capturing a guided mindfulness session at Alter, a new cold plunge and spa space. Beginning with a 3D Blender animation inspired by the breathing exercise, the video unfolds as a slow and peaceful portrait of the experience, following participants through moments of breath, stillness, and connection.`,
+    credits: `Directed and produced by Simran Dhaliwal of Addo Studios
+VFX by Addo Studios`,
+  },
+];
+/* ===================================================================== */
+
+function ytId(url) {
+  const m = url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/);
+  return m ? m[1] : url.trim();
+}
+const pad = n => String(n).padStart(2, "0");
+
+/* ---------- editorial layout: a full-width opener, then staggered pairs and offset singles ---------- */
+const LAYOUT = {
+  full:   { col: "1 / -1",      ar: "21 / 9" },
+  pairA:  { col: "1 / span 7",  ar: "16 / 10" },
+  pairB:  { col: "9 / span 4",  ar: "4 / 5", off: true },
+  single: { col: "3 / span 8",  ar: "16 / 9" },
+  pairC:  { col: "1 / span 5",  ar: "4 / 5" },
+  pairD:  { col: "7 / span 6",  ar: "16 / 10", off: true },
+  singleR:{ col: "5 / span 8",  ar: "16 / 9" },
+};
+const SEQ = ["full", "pairA", "pairB", "single", "pairC", "pairD", "single"];
+function slotFor(i, n) {
+  let k = i === 0 ? "full" : SEQ[1 + ((i - 1) % (SEQ.length - 1))];
+  if ((k === "pairA" || k === "pairC") && i === n - 1) k = "singleR";   // never leave half a pair alone
+  return LAYOUT[k];
+}
+
+const reel = document.getElementById("reel");
+VIDEOS.forEach((v, i) => {
+  const id = ytId(v.url), slot = slotFor(i, VIDEOS.length);
+  const art = document.createElement("article");
+  art.className = "proj" + (slot.off ? " off" : "");
+  art.style.gridColumn = slot.col;
+  art.innerHTML = `
+    <button class="proj-media" style="aspect-ratio:${slot.ar}">
+      <img loading="lazy" alt="" src="https://i.ytimg.com/vi/${id}/maxresdefault.jpg"
+        onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${id}/hqdefault.jpg'">
+      <span class="slate">Reel ${pad(i + 1)}</span>
+      <span class="play">Play</span>
+    </button>
+    <div class="proj-info"><h3></h3><span class="tag"></span><p></p></div>`;
+  art.querySelector("h3").textContent = v.title;
+  art.querySelector(".tag").textContent = v.tag || "";
+  const p = art.querySelector("p");
+  if (v.desc) p.textContent = v.desc.split(/\n\s*\n/)[0]; else p.remove();
+  const media = art.querySelector(".proj-media");
+  media.setAttribute("aria-label", "Play " + v.title);
+  media.addEventListener("click", () => openVideo(id, v));
+  media.addEventListener("pointermove", e => {
+    const r = media.getBoundingClientRect();
+    media.style.setProperty("--cx", (e.clientX - r.left) + "px");
+    media.style.setProperty("--cy", (e.clientY - r.top) + "px");
+  });
+  reel.appendChild(art);
+});
+document.getElementById("workCount").textContent = pad(VIDEOS.length) + " films";
+
+// marquee of titles
+const mq = document.getElementById("marquee");
+const glyphs = ["", " t", " d", " o"];
+const strip = VIDEOS.map((v, i) => `<b></b><i class="g${glyphs[i % 4]}"></i>`).join("");
+for (let k = 0; k < 2; k++) {
+  const span = document.createElement("span");
+  span.innerHTML = strip + strip;
+  span.querySelectorAll("b").forEach((b, j) => b.textContent = VIDEOS[j % VIDEOS.length].title);
+  mq.appendChild(span);
+}
+
+// reveal + parallax
+const projs = [...document.querySelectorAll(".proj")];
+if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -12% 0px" });
+  projs.forEach(p => io.observe(p));
+} else projs.forEach(p => p.classList.add("in"));
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let ticking = false;
+function parallax() {
+  ticking = false;
+  const vh = innerHeight;
+  projs.forEach(p => {
+    const m = p.querySelector(".proj-media"), r = m.getBoundingClientRect();
+    if (r.bottom < -100 || r.top > vh + 100) return;
+    const c = (r.top + r.height / 2 - vh / 2) / vh;
+    m.style.setProperty("--py", (c * -6) + "%");
+  });
+}
+if (!reduceMotion) { addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(parallax); } }, { passive: true }); parallax(); }
+
+// Video pop-up
+const player = document.getElementById("player");
+const frame = document.getElementById("frame");
+let lastFocus = null;
+function openVideo(id, v) {
+  lastFocus = document.activeElement;
+  const info = document.getElementById("info");
+  info.innerHTML = "";
+  const head = document.createElement("div"); head.className = "info-head";
+  const h = document.createElement("h2"); h.textContent = v.title; head.appendChild(h);
+  if (v.tag) { const t = document.createElement("span"); t.textContent = v.tag; head.appendChild(t); }
+  info.appendChild(head);
+  (v.desc || "").split(/\n\s*\n/).filter(x => x.trim()).forEach(par => {
+    const p = document.createElement("p"); p.textContent = par.trim(); info.appendChild(p);
+  });
+  if (v.credits && v.credits.trim()) {
+    const c = document.createElement("p"); c.className = "credits"; c.textContent = v.credits.trim(); info.appendChild(c);
+  }
+  player.scrollTop = 0;
+  frame.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1"
+    allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen title="${v.title.replace(/"/g, "&quot;")}"></iframe>`;
+  player.classList.add("open");
+  document.body.classList.add("locked");
+  document.getElementById("closeBtn").focus();
+}
+function closeVideo() {
+  player.classList.remove("open");
+  document.body.classList.remove("locked");
+  setTimeout(() => { frame.innerHTML = ""; }, 350);
+  if (lastFocus) lastFocus.focus();
+}
+document.getElementById("closeBtn").addEventListener("click", closeVideo);
+player.addEventListener("click", e => { if (e.target === player) closeVideo(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && player.classList.contains("open")) closeVideo(); });
+
+const mail = document.getElementById("mailLink");
+mail.href = "mailto:" + CONTACT_EMAIL;
+mail.textContent = CONTACT_EMAIL;
+const phone = document.getElementById("phoneLink");
+const digits = CONTACT_PHONE.replace(/\D/g, "");
+phone.href = "tel:+1" + digits.slice(-10);
+phone.textContent = `(${digits.slice(-10, -7)}) ${digits.slice(-7, -4)}-${digits.slice(-4)}`;
+document.getElementById("yr").textContent = new Date().getFullYear();
+
+
+/* ---------- background: A, D, D, O roll in from the sides and spell ADDO (very faint) ---------- */
+(function () {
+  const cv = document.getElementById("bgword"), ctx = cv.getContext("2d");
+  const OPACITY = 0.055;                      // raise for more visible, lower for subtler
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // widths in units of r (the shape's half-height): triangle, semicircle, semicircle, circle
+  const SH = [{ t: 0, w: 1.882 }, { t: 1, w: 1 }, { t: 1, w: 1 }, { t: 3, w: 2 }];
+  const GAP = 0.38, DUR = 2.8, DELAY = [0, 0.18, 0.18, 0];
+  let W, H, r, targets = [], starts = [], t0 = null, done = false;
+
+  function layout() {
+    const DPR = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * DPR; cv.height = H * DPR; ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    const total = SH.reduce((a, s) => a + s.w, 0) + GAP * (SH.length - 1);
+    r = Math.min(W * 0.9, 1250, H * 1.6) / total;
+    let x = W / 2 - total * r / 2;
+    targets = SH.map(s => { const c = x + s.w * r / 2; x += (s.w + GAP) * r; return c; });
+    // the first two roll in from the left, the last two from the right
+    starts = targets.map((tx, i) => i < 2 ? tx - (W * 0.65 + (2 - i) * r * 2) : tx + (W * 0.65 + (i - 1) * r * 2));
+  }
+  const ease = k => { const c = 0.9; k = Math.min(1, Math.max(0, k)); return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };
+
+  function shape(t) {
+    ctx.beginPath();
+    if (t === 0) { ctx.moveTo(-0.941, 1); ctx.lineTo(0, -1); ctx.lineTo(0.941, 1); }
+    else if (t === 1) { ctx.moveTo(-0.5, -1); ctx.arc(-0.5, 0, 1, -Math.PI / 2, Math.PI / 2); }
+    else ctx.arc(0, 0, 1, 0, Math.PI * 2);
+    ctx.closePath();
+  }
+
+  function draw(time) {
+    ctx.clearRect(0, 0, W, H);
+    const cy = H * 0.52;
+    let finished = true;
+    SH.forEach((s, i) => {
+      const raw = reduce ? 1 : (time - DELAY[i]) / DUR;
+      if (raw < 1) finished = false;
+      const k = ease(raw);
+      const x = starts[i] + (targets[i] - starts[i]) * k;
+      const ang = (x - targets[i]) / r;            // rolling: turns as it travels, lands upright
+      ctx.save(); ctx.translate(x, cy); ctx.rotate(ang); ctx.scale(r, r);
+      shape(s.t);
+      ctx.fillStyle = `rgba(241,238,232,${OPACITY})`; ctx.fill();
+      ctx.lineWidth = 1.2 / r; ctx.strokeStyle = `rgba(241,238,232,${OPACITY * 1.6})`; ctx.stroke();
+      ctx.restore();
+    });
+    return finished;
+  }
+
+  function tick(now) {
+    if (t0 === null) t0 = now;
+    done = draw((now - t0) / 1000);
+    if (!done) requestAnimationFrame(tick);
+  }
+  function start() { if (t0 !== null || done) return; layout(); requestAnimationFrame(tick); }
+
+  layout(); draw(0);
+  addEventListener("resize", () => { layout(); if (done || reduce) draw(99); });
+  // roll in once the portfolio is revealed (after the intro, or right away if it was skipped)
+  const root = document.documentElement;
+  if (root.classList.contains("revealed") || reduce) start();
+  else new MutationObserver((m, o) => { if (root.classList.contains("revealed")) { o.disconnect(); start(); } })
+    .observe(root, { attributes: true, attributeFilter: ["class"] });
+})();
+
+/* =====================================================================
+   INTRO — soft, weighted AD/DO shapes on grainy dark grey. They dodge
+   the cursor, squish like balloons on impact (and glow), switch colour
+   and fill on contact, while a camera hung at the top works as a
+   spotlight that follows the cursor. On Enter the four shapes form the logo.
+   ===================================================================== */
+(function () {
+  /* ---- easy-to-tweak settings ---- */
+  const ENTER_DELAY = 5000;            // ms before "Enter" appears
+  const GRAVITY     = 22;              // px/s² — raise for heavier, sinkier shapes
+  const SOFTNESS    = 1;               // 0.5 = firm rubber, 1 = balloon, 1.5 = jelly
+  const PATTERN_ODDS = 0.22;          // chance a shape shows stripes / dots when it fills
+  const PALETTE     = [[241,238,232], [242,193,78], [156,205,170], [232,124,96]]; // cream, honey, mint, terracotta
+  const BG_IN = "#2a2a2b", BG_OUT = "#121212";
+
+  const intro = document.getElementById("intro");
+  const ui = document.getElementById("introUi");
+  const enterBtn = document.getElementById("enterBtn");
+  const skipBtn = document.getElementById("skipBtn");
+  const cv = document.getElementById("field");
+  const ctx = cv.getContext("2d");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const INK = "241,238,232";
+  const TAU = Math.PI * 2;
+  const root = document.documentElement;
+
+  let seen = false;
+  try { seen = sessionStorage.getItem("addoIntro") === "1"; } catch (e) {}
+  if (seen || location.hash === "#work" || location.hash === "#contact") {
+    intro.remove(); document.body.classList.remove("locked"); root.classList.add("revealed"); return;
+  }
+
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const easeOutBack = x => { const c = 1.6; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+  const easeInOutCubic = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`;
+
+  let W = 0, H = 0, DPR = 1, bg = null, vignette = null, grainPat = null;
+  let shapes = [], waves = [], flashes = [], dust = [], scratch = null;
+  let cams = [];
+  let mode = "float", modeT = 0, running = true, uiShown = false, uiBox = null, extrasFade = 1;
+  const ptr = { x: -9999, y: -9999, sx: -9999, sy: -9999, vx: 0, vy: 0, on: false, mouse: true };
+  let par = 1;
+
+  const LOGO = [{ x: 50, y: 52.5 }, { x: 131.25, y: 52.5 }, { x: 73.75, y: 147.5 }, { x: 150, y: 147.5 }];
+
+  /* ---------- outlines sampled into points so shapes can deform ---------- */
+  function contour(type, N) {
+    const dense = [];
+    const line = (x0, y0, x1, y1) => { for (let i = 0; i < 60; i++) { const k = i / 60; dense.push([x0 + (x1 - x0) * k, y0 + (y1 - y0) * k]); } };
+    const arc = (cx, cy, a0, a1) => { for (let i = 0; i < 120; i++) { const a = a0 + (a1 - a0) * i / 120; dense.push([cx + Math.cos(a), cy + Math.sin(a)]); } };
+    if (type === 0) { line(0, -1, 0.941, 1); line(0.941, 1, -0.941, 1); line(-0.941, 1, 0, -1); }
+    else if (type === 1) { arc(-0.5, 0, -Math.PI / 2, Math.PI / 2); line(-0.5, 1, -0.5, -1); }
+    else if (type === 2) { arc(0.5, 0, Math.PI / 2, Math.PI * 1.5); line(0.5, -1, 0.5, 1); }
+    else arc(0, 0, 0, TAU);
+    // resample evenly by length
+    const len = [0];
+    for (let i = 1; i <= dense.length; i++) { const a = dense[i - 1], b = dense[i % dense.length]; len.push(len[i - 1] + Math.hypot(b[0] - a[0], b[1] - a[1])); }
+    const total = len[len.length - 1], pts = [];
+    let j = 0;
+    for (let i = 0; i < N; i++) {
+      const target = total * i / N;
+      while (len[j + 1] < target) j++;
+      const a = dense[j], b = dense[(j + 1) % dense.length], k = (target - len[j]) / ((len[j + 1] - len[j]) || 1);
+      pts.push([a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k]);
+    }
+    let cx = 0, cy = 0; pts.forEach(p => { cx += p[0]; cy += p[1]; }); cx /= N; cy /= N;
+    const bx = new Float32Array(N), by = new Float32Array(N), nx = new Float32Array(N), ny = new Float32Array(N), an = new Float32Array(N);
+    for (let i = 0; i < N; i++) {
+      const p = pts[i], a = pts[(i - 1 + N) % N], b = pts[(i + 1) % N];
+      let tx = b[0] - a[0], ty = b[1] - a[1], l = Math.hypot(tx, ty) || 1;
+      let ox = ty / l, oy = -tx / l;
+      if (ox * (p[0] - cx) + oy * (p[1] - cy) < 0) { ox = -ox; oy = -oy; }
+      bx[i] = p[0]; by[i] = p[1]; nx[i] = ox; ny[i] = oy; an[i] = Math.atan2(p[1] - cy, p[0] - cx);
+    }
+    return { N, bx, by, nx, ny, an };
+  }
+  const CONTOURS = { big: [0, 1, 2, 3].map(t => contour(t, 44)), small: [0, 1, 2, 3].map(t => contour(t, 26)) };
+
+  function make(type, r, z, filled, hero, i, base) {
+    const a = rand(0, TAU), sp = rand(15, 45);
+    const c = (hero ? CONTOURS.big : CONTOURS.small)[type];
+    return {
+      type, r, z, hero, c,
+      m: clamp(Math.pow(r / (base * 0.04), 2), 0.25, 8),
+      x: rand(r, W - r), y: rand(r, H * 0.8), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+      ang: hero ? rand(-1, 1) : rand(0, TAU), spin: rand(-0.3, 0.3), av: 0,
+      ph: rand(0, 1000), born: hero ? 0.2 + i * 0.18 : rand(0.1, 1.4), scale: 0, fade: 1,
+      ci: 0, col: PALETTE[0].slice(), fill: filled ? 1 : 0, tfill: filled ? 1 : 0,
+      pat: filled && !hero && Math.random() < PATTERN_ODDS ? 1 + ((Math.random() * 2) | 0) : 0,
+      patAng: rand(0, Math.PI), cd: 0, glow: 0, inField: false,
+      d: new Float32Array(c.N), dv: new Float32Array(c.N)
+    };
+  }
+
+  // impact: dent the outline where it was hit, proportional to the hit
+  function impact(s, dirx, diry, strength) {
+    if (!s.d || strength <= 0) return;
+    strength = Math.min(strength, 1.3) * SOFTNESS;
+    const a = Math.atan2(diry, dirx) - s.ang, c = s.c;
+    for (let i = 0; i < c.N; i++) {
+      const w = Math.cos(c.an[i] - a);
+      if (w > 0) s.dv[i] -= strength * Math.pow(w, 5) * 9;
+      else s.dv[i] += strength * Math.pow(-w, 3) * 1.2;   // the far side bulges a little
+    }
+    s.glow = Math.max(s.glow, clamp(strength * 1.1, 0, 1));
+  }
+  function flash(x, y, col, str) {
+    if (str < 0.12 || flashes.length > 40) return;
+    flashes.push({ x, y, col: col.slice(), r: 26 + 90 * Math.min(str, 1.2), life: 1 });
+  }
+
+  // contact: flip filled ↔ outlined and pick a new colour (sometimes a pattern)
+  function touch(s) {
+    if (!s.r || s.cd > 0 || mode !== "float") return;
+    s.cd = 0.4;
+    s.tfill = s.tfill > 0.5 ? 0 : 1;
+    if (s.tfill && !s.hero) s.pat = Math.random() < PATTERN_ODDS ? 1 + ((Math.random() * 2) | 0) : 0;
+    let ci; do { ci = (Math.random() * PALETTE.length) | 0; } while (ci === s.ci);
+    s.ci = ci;
+  }
+
+  function build() {
+    const base = Math.min(W, H);
+    shapes = [];
+    for (let i = 0; i < 4; i++) shapes.push(make(i, base * rand(0.075, 0.1), 1, true, true, i, base));
+    const n = Math.round(clamp(W * H / 32500, 11, 35));   // ~20% fewer shapes
+    for (let i = 0; i < n; i++) {
+      const z = rand(0.3, 1);
+      shapes.push(make(i % 4, base * rand(0.016, 0.055) * (0.55 + z * 0.6), z, Math.random() > 0.45, false, i, base));
+    }
+    shapes.sort((a, b) => a.z - b.z);
+  }
+
+  function makeGrain() {
+    const g = document.createElement("canvas"); g.width = g.height = 180;
+    const gx = g.getContext("2d"), img = gx.createImageData(180, 180);
+    for (let i = 0; i < img.data.length; i += 4) {
+      const v = Math.random() * 255;
+      img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+      img.data[i + 3] = Math.random() < 0.5 ? 22 : 10;
+    }
+    gx.putImageData(img, 0, 0);
+    grainPat = ctx.createPattern(g, "repeat");
+  }
+
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    const R0 = Math.hypot(W, H) * 0.6;
+    bg = ctx.createRadialGradient(W / 2, H * 0.45, 0, W / 2, H / 2, R0);
+    bg.addColorStop(0, BG_IN); bg.addColorStop(0.6, "#1d1d1e"); bg.addColorStop(1, BG_OUT);
+    vignette = ctx.createRadialGradient(W / 2, H / 2, R0 * 0.45, W / 2, H / 2, R0);
+    vignette.addColorStop(0, "rgba(0,0,0,0)"); vignette.addColorStop(1, "rgba(0,0,0,0.55)");
+    if (!grainPat) makeGrain();
+    if (!shapes.length) build();
+    placeCams();
+    shapes.forEach(s => { s.x = clamp(s.x, 0, W); s.y = clamp(s.y, 0, H); });
+    measureUi();
+  }
+  function measureUi() {
+    if (!uiShown) return;
+    const r = ui.getBoundingClientRect();
+    uiBox = { cx: r.left + r.width / 2, cy: r.top + r.height / 2, hw: r.width / 2 + 50, hh: r.height / 2 + 50 };
+  }
+
+  /* ---------- the soft-body spring for each outline ---------- */
+  function soften(s, dt) {
+    const c = s.c, N = c.N, d = s.d, v = s.dv;
+    const K = 170 / SOFTNESS, C = 6.5, L = 380;
+    const h = dt / 2;
+    for (let step = 0; step < 2; step++) {
+      for (let i = 0; i < N; i++) {
+        const lap = d[(i - 1 + N) % N] + d[(i + 1) % N] - 2 * d[i];
+        v[i] += (-K * d[i] - C * v[i] + L * lap) * h;
+      }
+      for (let i = 0; i < N; i++) d[i] = clamp(d[i] + v[i] * h, -0.55, 0.38);
+    }
+  }
+
+  /* ---------- update ---------- */
+  function update(dt, t, rdt = dt) {
+    modeT += rdt;
+    ptr.sx += (ptr.x - ptr.sx) * (1 - Math.exp(-rdt * 18));
+    ptr.sy += (ptr.y - ptr.sy) * (1 - Math.exp(-rdt * 18));
+    par += ((mode === "float" ? 1 : 0) - par) * (1 - Math.exp(-dt * 4));
+    if (mode !== "float") extrasFade = Math.max(0, extrasFade - dt * 2);
+
+    const R = Math.max(120, Math.min(W, H) * 0.2);
+    const cx = W / 2, cy = H / 2;
+    const L = Math.min(W, H) * 0.36 / 200;
+    const ease = 1 - Math.exp(-dt * 9);
+    const pspeed = Math.hypot(ptr.vx, ptr.vy);
+    ptr.vx *= Math.pow(0.02, dt); ptr.vy *= Math.pow(0.02, dt);
+
+    shapes.forEach(s => {
+      s.scale = easeOutBack(clamp((t - s.born) / 0.9, 0, 1));
+      s.cd -= dt;
+      s.glow *= Math.pow(0.03, dt);
+      const tc = PALETTE[s.ci];
+      for (let k = 0; k < 3; k++) s.col[k] += (tc[k] - s.col[k]) * ease;
+      s.fill += (s.tfill - s.fill) * ease;
+      soften(s, dt);
+
+      if (mode === "float") {
+        const inv = 1 / Math.sqrt(s.m);
+        s.vx += Math.sin(t * 0.31 + s.ph + s.y * 0.004) * 16 * dt;
+        s.vy += Math.cos(t * 0.27 + s.ph * 1.3 + s.x * 0.004) * 16 * dt + GRAVITY * dt;
+        const zone = H * 0.8;
+        if (s.y > zone) s.vy -= ((s.y - zone) / (H - zone)) * (GRAVITY * 3 + 40) * dt;
+
+        if (ptr.on) {
+          const dx = s.x - ptr.x, dy = s.y - ptr.y, d = Math.hypot(dx, dy) || 1, reach = R + s.r;
+          if (d < reach) {
+            const k = 1 - d / reach, f = k * k * 3600 * (0.45 + s.z * 0.75) * inv;
+            s.vx += dx / d * f * dt; s.vy += dy / d * f * dt;
+            s.av += (dx * ptr.vy - dy * ptr.vx) * 0.0000045 * k * inv;
+          }
+          const inside = d < reach * 0.72;
+          if (inside && !s.inField) {
+            touch(s);
+            const str = clamp(pspeed / 1800, 0.18, 1);
+            impact(s, -dx / d, -dy / d, str);
+            if (str > 0.3) flash(s.x - dx / d * s.r, s.y - dy / d * s.r, s.col, str * 0.7);
+          }
+          s.inField = inside;
+        } else s.inField = false;
+
+        if (uiBox) {
+          const dx = (s.x - uiBox.cx) / (uiBox.hw + s.r), dy = (s.y - uiBox.cy) / (uiBox.hh + s.r), d = Math.hypot(dx, dy) || 1;
+          if (d < 1) { const f = (1 - d) * 1500 * inv; s.vx += dx / d * f * dt; s.vy += dy / d * f * dt; }
+        }
+        waves.forEach(w => {
+          const dx = s.x - w.x, dy = s.y - w.y, d = Math.hypot(dx, dy) || 1, rad = w.t * 950;
+          if (Math.abs(d - rad) < 70) {
+            const f = (1 - w.t / 0.9) * 5200 * (0.4 + s.z * 0.6) * inv;
+            s.vx += dx / d * f * dt; s.vy += dy / d * f * dt; s.av += rand(-3, 3) * dt;
+            if (!w.hit.has(s)) { w.hit.add(s); touch(s); impact(s, -dx / d, -dy / d, 0.7 * (1 - w.t)); }
+          }
+        });
+
+        const sp = Math.hypot(s.vx, s.vy), cruise = 20 + 22 * s.z + GRAVITY * 0.6;
+        if (sp > cruise) { const k = Math.pow(0.4 + 0.35 * clamp(s.m / 6, 0, 1), dt); s.vx *= k; s.vy *= k; }
+        if (sp > 1400) { s.vx *= 1400 / sp; s.vy *= 1400 / sp; }
+        s.av *= Math.pow(0.5, dt);
+        s.ang += (s.spin + s.av) * dt;
+        s.x += s.vx * dt; s.y += s.vy * dt;
+        walls(s, s.r * 0.75 * s.scale, true);
+        // invisible shield: shapes ease to a stop just outside each camera, no bounce or contact
+        cams.forEach(c => {
+          if (c.scale < 0.2) return;
+          const dx = s.x - c.px, dy = s.y - c.py, d = Math.hypot(dx, dy) || 1;
+          const over = c.shield * c.scale + s.r * s.scale * 0.8 - d;
+          if (over > 0) {
+            const nx = dx / d, ny = dy / d, k = Math.min(1, dt * 14);
+            s.x += nx * over * k; s.y += ny * over * k;
+            const vn = s.vx * nx + s.vy * ny;
+            if (vn < 0) { s.vx -= vn * nx; s.vy -= vn * ny; }
+            s.vx *= Math.pow(0.2, dt); s.vy *= Math.pow(0.2, dt);
+          }
+        });
+      } else {
+        if (s.hero) {
+          const p = LOGO[s.type], tx = cx + (p.x - 100) * L, ty = cy + (p.y - 100) * L;
+          s.vx += ((tx - s.x) * 75 - s.vx * 17) * dt;
+          s.vy += ((ty - s.y) * 75 - s.vy * 17) * dt;
+          s.r += (42.5 * L - s.r) * (1 - Math.exp(-dt * 7));
+          let a = ((s.ang % TAU) + TAU) % TAU; if (a > Math.PI) a -= TAU;
+          s.ang -= a * (1 - Math.exp(-dt * 7));
+        } else {
+          s.fade = Math.max(0, s.fade - dt * 1.6);
+          s.ang += (s.spin + s.av) * dt;
+        }
+        s.x += s.vx * dt; s.y += s.vy * dt;
+      }
+    });
+
+    updateCams(dt, t);
+
+    // collisions — mass-weighted; impacts dent, glow and recolour
+    if (mode === "float") {
+      const bodies = shapes;   // cameras sit outside the physics
+      for (let i = 0; i < bodies.length; i++) for (let j = i + 1; j < bodies.length; j++) {
+        const a = bodies[i], b = bodies[j];
+        if (Math.abs(a.z - b.z) > 0.25) continue;
+        const ra = a.R || a.r * a.scale * 0.92, rb = b.R || b.r * b.scale * 0.92;
+        const dx = b.x - a.x, dy = b.y - a.y, min = ra + rb, d2 = dx * dx + dy * dy;
+        if (d2 >= min * min || d2 < 0.01) continue;
+        const d = Math.sqrt(d2), nx = dx / d, ny = dy / d, o = min - d, tot = a.m + b.m;
+        a.x -= nx * o * b.m / tot; a.y -= ny * o * b.m / tot; b.x += nx * o * a.m / tot; b.y += ny * o * a.m / tot;
+        const rv = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+        if (rv < 0) {
+          const j2 = -1.55 * rv / (1 / a.m + 1 / b.m);
+          a.vx -= j2 / a.m * nx; a.vy -= j2 / a.m * ny; b.vx += j2 / b.m * nx; b.vy += j2 / b.m * ny;
+          const spin = clamp(-rv * 0.02, 0, 2.5);
+          a.av += rand(-spin, spin) / Math.sqrt(a.m); b.av += rand(-spin, spin) / Math.sqrt(b.m);
+          if (-rv > 18) {
+            const str = clamp(-rv / 520, 0, 1.3);
+            touch(a); touch(b);
+            impact(a, nx, ny, str * 2 * b.m / tot);
+            impact(b, -nx, -ny, str * 2 * a.m / tot);
+            if (a.isCam) a.glow = Math.max(a.glow, str); if (b.isCam) b.glow = Math.max(b.glow, str);
+            flash(a.x + nx * ra, a.y + ny * ra, (a.col || b.col || PALETTE[1]), str);
+          }
+        }
+      }
+    }
+
+    waves.forEach(w => w.t += dt);
+    waves = waves.filter(w => w.t < 0.9);
+    flashes.forEach(f => f.life -= dt * 2.4);
+    flashes = flashes.filter(f => f.life > 0);
+
+    // film dust & the odd scratch
+    dust = [];
+    if (Math.random() < 0.18) for (let i = 0, n = 1 + (Math.random() * 3 | 0); i < n; i++)
+      dust.push({ x: rand(0, W), y: rand(0, H), r: rand(0.6, 2.2), light: Math.random() < 0.5 });
+    if (!scratch && Math.random() < dt * 0.25) scratch = { x: rand(W * 0.1, W * 0.9), life: rand(0.25, 0.8) };
+    if (scratch) { scratch.life -= dt; scratch.x += rand(-2, 2); if (scratch.life <= 0) scratch = null; }
+
+    if (mode === "assemble" && modeT > 1.45) { mode = "iris"; modeT = 0; intro.classList.add("opening"); }
+    if (mode === "iris" && modeT > 1.0) finish();
+  }
+
+  function walls(s, m, isShape) {
+    const hit = (v, nx, ny, px, py) => {
+      const imp = Math.abs(v);
+      if (imp > 40) {
+        const str = clamp(imp / 700, 0, 1.1);
+        if (isShape) impact(s, nx, ny, str); else s.glow = Math.max(s.glow, str);
+        if (imp > 160) flash(px, py, s.col || PALETTE[1], str * 0.8);
+      }
+      return -v * 0.62;
+    };
+    if (s.x < m)     { s.x = m;     if (s.vx < 0) { s.vx = hit(s.vx, -1, 0, 0, s.y); s.av += s.vy * 0.004; } }
+    if (s.x > W - m) { s.x = W - m; if (s.vx > 0) { s.vx = hit(s.vx, 1, 0, W, s.y); s.av -= s.vy * 0.004; } }
+    if (s.y < m)     { s.y = m;     if (s.vy < 0) { s.vy = hit(s.vy, 0, -1, s.x, 0); s.av -= s.vx * 0.004; } }
+    if (s.y > H - m) { s.y = H - m; if (s.vy > 0) { s.vy = hit(s.vy, 0, 1, s.x, H); s.av += s.vx * 0.004; } }
+  }
+
+  /* ---------- one camera hung at top-centre, working as a spotlight on the cursor ---------- */
+  const PIVOT = { x: -0.2, y: 0 };      // the camera turns on the centre of its body, like a spotlight on a yoke
+  function placeCams() {
+    const base = Math.min(W, H), u = base * 0.024 + 5;
+    const c = cams[0] || (cams[0] = { ang: Math.PI / 2, av: 0, flip: 1, reel: 0, rec: 0, born: 0.9, scale: 0, aimD: H * 0.5 });
+    c.u = u; c.px = W / 2; c.py = u * 3.2 + 8; c.shield = u * 3;
+  }
+
+  function updateCams(dt, t) {
+    const c = cams[0];
+    c.scale = easeOutBack(clamp((t - c.born) / 0.9, 0, 1));
+    c.rec += dt;
+    let tx, ty;
+    if (mode !== "float") { tx = W / 2; ty = H / 2; }
+    else if (ptr.on) { tx = ptr.x; ty = ptr.y; }
+    else { tx = W / 2 + Math.sin(t * 0.35) * W * 0.32; ty = H * 0.55 + Math.cos(t * 0.5) * H * 0.18; }
+    const dx = tx - c.px, dy = ty - c.py;
+    const want = Math.atan2(dy, dx);
+    let diff = want - c.ang; diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+    c.av += (diff * 80 - c.av * 14) * dt;                      // heavy, smooth pan
+    c.ang += c.av * dt;
+    c.aimD += (Math.max(Math.hypot(dx, dy), c.u * 4) - c.aimD) * (1 - Math.exp(-dt * 8));
+    // keep the reels on top: mirror the camera once the beam swings past straight-down
+    const facing = Math.cos(c.ang) >= 0 ? 1 : -1;
+    if (Math.abs(Math.cos(c.ang)) > 0.12) c.flipT = facing;
+    c.flip += ((c.flipT || 1) - c.flip) * (1 - Math.exp(-dt * 12));
+    c.reel += dt * (1 + Math.abs(c.av) * 3);
+    // the pool of light lands where the camera is actually pointing
+    c.lx = c.px + Math.cos(c.ang) * c.u * 2.45; c.ly = c.py + Math.sin(c.ang) * c.u * 2.45;
+    c.poolX = c.px + Math.cos(c.ang) * c.aimD; c.poolY = c.py + Math.sin(c.ang) * c.aimD;
+  }
+
+  function drawSpotlight() {
+    const c = cams[0];
+    const a = c.scale > 0 ? Math.min(1, c.scale) * (mode === "float" ? 1 : 0.7) : 0;
+    if (a <= 0) return;
+    const pr = Math.max(90, Math.min(W, H) * 0.17);
+    // the room dims around the pool of light
+    const dark = ctx.createRadialGradient(c.poolX, c.poolY, pr * 0.55, c.poolX, c.poolY, pr * 2.2);
+    dark.addColorStop(0, "rgba(0,0,0,0)"); dark.addColorStop(1, `rgba(0,0,0,${0.42 * a})`);
+    ctx.fillStyle = dark; ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = "lighter";
+    // beam from lens to pool
+    const ang = c.ang, nx = -Math.sin(ang), ny = Math.cos(ang), lw = c.u * 0.7;
+    const cg = ctx.createLinearGradient(c.lx, c.ly, c.poolX, c.poolY);
+    cg.addColorStop(0, `rgba(255,244,214,${0.16 * a})`); cg.addColorStop(1, `rgba(255,244,214,${0.04 * a})`);
+    ctx.beginPath();
+    ctx.moveTo(c.lx + nx * lw, c.ly + ny * lw);
+    ctx.lineTo(c.poolX + nx * pr * 0.9, c.poolY + ny * pr * 0.9);
+    ctx.lineTo(c.poolX - nx * pr * 0.9, c.poolY - ny * pr * 0.9);
+    ctx.lineTo(c.lx - nx * lw, c.ly - ny * lw);
+    ctx.closePath(); ctx.fillStyle = cg; ctx.fill();
+    // the pool itself
+    const pg = ctx.createRadialGradient(c.poolX, c.poolY, 0, c.poolX, c.poolY, pr);
+    pg.addColorStop(0, `rgba(255,244,214,${0.16 * a})`); pg.addColorStop(0.7, `rgba(255,244,214,${0.07 * a})`); pg.addColorStop(1, "rgba(255,244,214,0)");
+    ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(c.poolX, c.poolY, pr, 0, TAU); ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  function drawCams() {
+    const c = cams[0], u = c.u * c.scale;
+    if (u < 0.5) return;
+    ctx.save();   // the camera stays to spotlight the logo as it forms
+    // ceiling rod
+    ctx.strokeStyle = `rgba(${INK},0.7)`; ctx.lineWidth = 2; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(c.px, 0); ctx.lineTo(c.px, c.py); ctx.stroke();
+    ctx.fillStyle = "#2b2b2d"; ctx.fillRect(c.px - u * 0.9, 0, u * 1.8, 4);
+    // camera, turning on its centre
+    ctx.save();
+    ctx.translate(c.px, c.py);
+    ctx.scale(c.flip, 1); ctx.rotate(c.flip >= 0 ? c.ang : Math.PI - c.ang); ctx.scale(u, u); ctx.translate(-PIVOT.x, -PIVOT.y);
+    drawCameraBody(c);
+    ctx.restore();
+    // axle hub
+    ctx.beginPath(); ctx.arc(c.px, c.py, Math.max(3, u * 0.28), 0, TAU); ctx.fillStyle = "#3a3a3c"; ctx.fill();
+    ctx.strokeStyle = `rgba(${INK},0.85)`; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawCameraBody(c) {
+    const line = `rgba(${INK},0.85)`;
+    ctx.lineWidth = 0.07; ctx.strokeStyle = line; ctx.lineJoin = "round";
+    const reel = (x, y, r, a) => {
+      ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fillStyle = "#2b2b2d"; ctx.fill(); ctx.stroke();
+      ctx.save(); ctx.translate(x, y); ctx.rotate(a);
+      for (let i = 0; i < 5; i++) { const q = i / 5 * TAU; ctx.beginPath(); ctx.arc(Math.cos(q) * r * 0.55, Math.sin(q) * r * 0.55, r * 0.2, 0, TAU); ctx.fillStyle = "#161616"; ctx.fill(); }
+      ctx.beginPath(); ctx.arc(0, 0, r * 0.13, 0, TAU); ctx.fillStyle = `rgb(${INK})`; ctx.fill();
+      ctx.restore();
+    };
+    ctx.beginPath(); ctx.moveTo(-1.6, -1.4); ctx.lineTo(-1.05, -0.9); ctx.moveTo(1.15, -1.3); ctx.lineTo(0.55, -0.9);
+    ctx.stroke();
+    reel(-1.0, -1.75, 0.85, c.reel);
+    reel(0.65, -1.62, 0.7, c.reel * 1.2);
+    ctx.beginPath(); ctx.roundRect(-1.7, -0.9, 3.0, 1.85, 0.22); ctx.fillStyle = "#262628"; ctx.fill(); ctx.stroke();
+    ctx.save(); ctx.beginPath(); ctx.rect(-1.5, 0.35, 2.6, 0.38); ctx.clip();
+    ctx.fillStyle = "#f2c14e"; ctx.fillRect(-1.5, 0.35, 2.6, 0.38);
+    ctx.strokeStyle = "#262628"; ctx.lineWidth = 0.12;
+    for (let x = -1.7; x < 1.3; x += 0.3) { ctx.beginPath(); ctx.moveTo(x, 0.8); ctx.lineTo(x + 0.4, 0.3); ctx.stroke(); }
+    ctx.restore();
+    ctx.lineWidth = 0.07; ctx.strokeStyle = line;
+    ctx.save(); ctx.translate(-1.95, -0.35); ctx.scale(0.42, 0.36); ctx.beginPath(); ctx.moveTo(0.5, -1); ctx.arc(0.5, 0, 1, -Math.PI / 2, Math.PI / 2, true); ctx.closePath();
+    ctx.fillStyle = "#2b2b2d"; ctx.fill(); ctx.lineWidth = 0.18; ctx.stroke(); ctx.restore();
+    ctx.beginPath(); ctx.moveTo(1.3, -0.5); ctx.lineTo(2.25, -0.85); ctx.lineTo(2.25, 0.85); ctx.lineTo(1.3, 0.5); ctx.closePath();
+    ctx.fillStyle = "#2f2f31"; ctx.fill(); ctx.stroke();
+    const g = ctx.createRadialGradient(2.2, -0.25, 0.05, 2.25, 0, 0.9);
+    g.addColorStop(0, "rgba(255,250,230,1)"); g.addColorStop(0.4, "#f6e7b8"); g.addColorStop(1, "#5a4a22");
+    ctx.beginPath(); ctx.ellipse(2.25, 0, 0.26, 0.8, 0, 0, TAU); ctx.fillStyle = g;
+    ctx.shadowColor = "rgba(255,240,200,0.9)"; ctx.shadowBlur = 18; ctx.fill(); ctx.shadowBlur = 0; ctx.stroke();
+    const on = (c.rec % 1.4) < 0.9;
+    ctx.beginPath(); ctx.arc(-1.25, -0.5, 0.14, 0, TAU);
+    ctx.fillStyle = on ? "#ff5a4a" : "#5a2620"; if (on) { ctx.shadowColor = "#ff5a4a"; ctx.shadowBlur = 12; }
+    ctx.fill(); ctx.shadowBlur = 0;
+  }
+
+  /* ---------- drawing shapes ---------- */
+  function shapePath(s) {
+    const c = s.c, N = c.N, d = s.d;
+    const X = i => c.bx[i] + c.nx[i] * d[i], Y = i => c.by[i] + c.ny[i] * d[i];
+    ctx.beginPath();
+    ctx.moveTo((X(N - 1) + X(0)) / 2, (Y(N - 1) + Y(0)) / 2);
+    for (let i = 0; i < N; i++) { const j = (i + 1) % N; ctx.quadraticCurveTo(X(i), Y(i), (X(i) + X(j)) / 2, (Y(i) + Y(j)) / 2); }
+    ctx.closePath();
+  }
+
+  function drawShape(s) {
+    const a = s.fade * (s.hero ? 1 : 0.32 + 0.6 * s.z);
+    if (a <= 0.01 || s.scale <= 0.01) return;
+    const k = -0.035 * s.z * par;
+    const px = s.x + (ptr.sx > -999 ? (ptr.sx - W / 2) * k : 0);
+    const py = s.y + (ptr.sy > -999 ? (ptr.sy - H / 2) * k : 0);
+    const sc = s.r * s.scale;
+    ctx.save(); ctx.translate(px, py); ctx.rotate(s.ang); ctx.scale(sc, sc);
+    shapePath(s);
+    if (s.glow > 0.04) { ctx.shadowColor = rgba(s.col, Math.min(1, s.glow * 1.1)); ctx.shadowBlur = 12 + 46 * s.glow; }
+    if (s.fill > 0.01) {
+      ctx.fillStyle = rgba(s.col, a * s.fill * (s.pat ? 0.22 : 1)); ctx.fill();
+    }
+    ctx.lineWidth = (s.hero ? 2 : 1.5) / sc; ctx.strokeStyle = rgba(s.col, a); ctx.stroke();
+    ctx.shadowBlur = 0;
+    if (s.pat && s.fill > 0.05) {
+      ctx.save(); ctx.clip(); ctx.rotate(s.patAng);
+      ctx.fillStyle = ctx.strokeStyle = rgba(s.col, a * s.fill * 0.9);
+      if (s.pat === 1) { ctx.lineWidth = 0.1; for (let x = -1.6; x <= 1.6; x += 0.26) { ctx.beginPath(); ctx.moveTo(x, -1.6); ctx.lineTo(x, 1.6); ctx.stroke(); } }
+      else { for (let x = -1.6; x <= 1.6; x += 0.3) for (let y = -1.6; y <= 1.6; y += 0.3) { ctx.beginPath(); ctx.arc(x + ((y * 3.33 | 0) % 2) * 0.15, y, 0.07, 0, TAU); ctx.fill(); } }
+      ctx.restore();
+    }
+    // a soft highlight so filled shapes read like balloons
+    if (s.fill > 0.3 && !s.pat) {
+      const g = ctx.createRadialGradient(-0.35, -0.45, 0, -0.35, -0.45, 1.1);
+      g.addColorStop(0, `rgba(255,255,255,${0.16 * s.fill * a})`); g.addColorStop(1, "rgba(255,255,255,0)");
+      shapePath(s); ctx.fillStyle = g; ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function render(t) {
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+    shapes.forEach(s => { if (s.z < 0.75) drawShape(s); });
+    shapes.forEach(s => { if (s.z >= 0.75) drawShape(s); });
+    drawSpotlight();
+    drawCams();
+
+    // impact glows
+    ctx.globalCompositeOperation = "lighter";
+    flashes.forEach(f => {
+      const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r * (1.4 - f.life * 0.4));
+      g.addColorStop(0, rgba(f.col, 0.45 * f.life)); g.addColorStop(1, rgba(f.col, 0));
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(f.x, f.y, f.r * 1.4, 0, TAU); ctx.fill();
+    });
+    ctx.globalCompositeOperation = "source-over";
+
+    waves.forEach(w => {
+      ctx.beginPath(); ctx.arc(w.x, w.y, w.t * 950, 0, TAU);
+      ctx.strokeStyle = `rgba(${INK},${0.35 * (1 - w.t / 0.9)})`; ctx.lineWidth = 1; ctx.stroke();
+    });
+
+    // texture: vignette, grain, dust, scratches
+    ctx.fillStyle = vignette; ctx.fillRect(0, 0, W, H);
+    ctx.save(); ctx.translate(-(Math.random() * 180 | 0), -(Math.random() * 180 | 0));
+    ctx.fillStyle = grainPat; ctx.fillRect(0, 0, W + 180, H + 180); ctx.restore();
+    dust.forEach(d => { ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, TAU); ctx.fillStyle = d.light ? "rgba(241,238,232,0.35)" : "rgba(0,0,0,0.5)"; ctx.fill(); });
+    if (scratch) { ctx.fillStyle = "rgba(241,238,232,0.07)"; ctx.fillRect(scratch.x, 0, 1, H); }
+    if (ptr.on && ptr.mouse && mode === "float") {
+      const R = Math.max(120, Math.min(W, H) * 0.2);
+      ctx.beginPath(); ctx.arc(ptr.sx, ptr.sy, R, 0, TAU);
+      ctx.strokeStyle = `rgba(${INK},0.06)`; ctx.lineWidth = 1; ctx.stroke();
+      ctx.beginPath(); ctx.arc(ptr.sx, ptr.sy, 14, 0, TAU);
+      ctx.strokeStyle = `rgba(${INK},0.7)`; ctx.stroke();
+      ctx.beginPath(); ctx.arc(ptr.x, ptr.y, 2.5, 0, TAU);
+      ctx.fillStyle = `rgba(${INK},0.95)`; ctx.fill();
+    }
+
+    if (mode === "iris") {
+      const o = shapes.find(s => s.hero && s.type === 3);
+      const e = easeInOutCubic(clamp(modeT / 1.0, 0, 1));
+      const far = Math.max(Math.hypot(o.x, o.y), Math.hypot(W - o.x, o.y), Math.hypot(o.x, H - o.y), Math.hypot(W - o.x, H - o.y));
+      const r = o.r * 0.98 + e * far;
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.beginPath(); ctx.arc(o.x, o.y, r, 0, TAU); ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
+      ctx.beginPath(); ctx.arc(o.x, o.y, r, 0, TAU);
+      ctx.strokeStyle = `rgba(${INK},${0.8 * (1 - e)})`; ctx.lineWidth = 2; ctx.stroke();
+    }
+  }
+
+  let last = performance.now();
+  const t0 = last;
+  function frame(now) {
+    if (!running) return;
+    const dt = Math.min(0.033, (now - last) / 1000); last = now;
+    const t = (now - t0) / 1000;
+    update(dt, t);
+    render(t);
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- input ---------- */
+  intro.addEventListener("pointermove", e => {
+    const nx = e.clientX, ny = e.clientY;
+    if (ptr.on) { ptr.vx = (nx - ptr.x) * 60; ptr.vy = (ny - ptr.y) * 60; } else { ptr.sx = nx; ptr.sy = ny; }
+    ptr.x = nx; ptr.y = ny; ptr.on = true; ptr.mouse = e.pointerType === "mouse";
+  });
+  intro.addEventListener("pointerdown", e => {
+    ptr.x = ptr.sx = e.clientX; ptr.y = ptr.sy = e.clientY; ptr.on = true; ptr.mouse = e.pointerType === "mouse";
+    if (mode === "float" && !e.target.closest("button")) waves.push({ x: e.clientX, y: e.clientY, t: 0, hit: new Set() });
+  });
+  intro.addEventListener("pointerup", e => { if (e.pointerType !== "mouse") ptr.on = false; });
+  intro.addEventListener("pointerleave", () => { ptr.on = false; });
+
+  function showUi() { uiShown = true; ui.classList.add("show"); measureUi(); }
+
+  function enter() {
+    if (mode !== "float") return;
+    ui.classList.add("hide"); skipBtn.style.display = "none";
+    if (reduce) { finish(); return; }
+    mode = "assemble"; modeT = 0;
+    shapes.forEach(s => {
+      if (s.hero) { s.scale = 1; s.born = -10; s.ci = 0; s.tfill = 1; s.pat = 0; return; }
+      const dx = s.x - W / 2, dy = s.y - H / 2, d = Math.hypot(dx, dy) || 1, sp = rand(500, 1100);
+      s.vx = dx / d * sp; s.vy = dy / d * sp; s.av = rand(-4, 4);
+    });
+  }
+  function finish() {
+    running = false;
+    try { sessionStorage.setItem("addoIntro", "1"); } catch (e) {}
+    intro.classList.add("gone");
+    document.body.classList.remove("locked");
+    root.classList.add("revealed");
+  }
+
+  enterBtn.addEventListener("click", enter);
+  skipBtn.addEventListener("click", finish);
+  addEventListener("resize", resize);
+
+  resize();
+  if (reduce) {
+    shapes.forEach(s => { s.scale = 1; }); cams.forEach(c => c.scale = 1); updateCams(0.016, 0); render(0); showUi();
+  } else {
+    requestAnimationFrame(frame);
+    setTimeout(showUi, ENTER_DELAY);
+  }
+})();
+
+</script>
+</body>
+</html>

@@ -189,12 +189,16 @@
   #player.open { opacity: 1; visibility: visible; transition: opacity .35s; }
   .player-inner { width: min(1100px, 100%); margin: 0 auto; }
   .frame { width: 100%; aspect-ratio: 16 / 9; }
+  .player-inner.vert .info { margin: 0 auto; }
+  .frame.vertical { aspect-ratio: 9 / 16; width: min(100%, calc(78vh * 9 / 16)); margin: 0 auto; }
   .frame iframe { width: 100%; height: 100%; border: 0; border-radius: 3px; background: #000; }
   .info { max-width: 68ch; padding-top: 1.6rem; }
   .info-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1rem; margin-bottom: .9rem; }
   .info h2 { font-stretch: 116%; font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 560; }
   .info-head span { color: var(--mint); font-family: var(--mono); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; }
   .info p { color: rgba(241,238,232,.8); line-height: 1.65; margin-top: .8rem; }
+  .info-link { display: inline-block; margin-top: 1.1rem; font-family: var(--mono); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--honey); text-decoration: none; border-bottom: 1px solid rgba(242,193,78,.4); padding-bottom: .2rem; }
+  .info-link:hover { border-color: var(--honey); }
   .info .credits { white-space: pre-line; color: var(--muted); font-family: var(--mono); font-size: .8rem; line-height: 1.8; border-top: 1px solid var(--line); padding-top: 1rem; margin-top: 1.4rem; }
   .close {
     position: fixed; top: calc(1rem + env(safe-area-inset-top, 0px)); right: 1rem; z-index: 2; width: 44px; height: 44px; border-radius: 50%;
@@ -292,6 +296,32 @@ const CONTACT_PHONE = "416-939-6855";
 
 const VIDEOS = [
   {
+    title: "Kazdoura — Ala Mahlak",
+    tag: "Music Video",
+    url: "https://www.youtube.com/watch?v=Vt1AmHzhBa0",
+    desc: `The music video for “Ala Mahlak” by Kazdoura, from their upcoming album Markab (مركب). A solo-operated shoot for the visuals of the new album.`,
+    link: { label: "Pre-order Markab on Bandcamp", url: "https://habibifunkrecords.bandcamp.com/album/habibi-funk-037-markab" },
+    credits: `Director: Simran Dhaliwal
+Videographer: Simran Dhaliwal
+Editor: Simran Dhaliwal
+
+Lyrics by Leen Hamo
+Music and arrangement by Leen Hamo and John Abou Chacra
+Produced by Kazdoura
+Co-produced by Zack Santella
+Additional production by Tom Nixon
+Recording engineer: Zack Santella
+Mixed and mastered by Tom Nixon
+Recorded at Dream Club, Victoria, BC
+
+Performed by:
+Vocals: Leen Hamo
+Electric guitar, flute: John Abou Chacra
+Keyboards, synthesizer: Reef Hamadah
+Electric bass: Steven Taddei
+Drums and percussion: Austin Tufts`,
+  },
+  {
     title: "Rev’n’Run — Honda Indy 5K",
     tag: "Event Film",
     url: "https://www.youtube.com/watch?v=PSUbjrnlICk",
@@ -337,6 +367,36 @@ Special thanks to Seth Mohan.`,
     credits: `Directed and produced by Simran Dhaliwal of Addo Studios
 VFX by Addo Studios`,
   },
+  {
+    title: "Bring a Trailer — Woodward Dream Cruise",
+    tag: "Event Film",
+    url: "https://youtube.com/shorts/WQkzIZupW-A",
+    vertical: true,   // a YouTube Short — shown in a tall frame
+    desc: `Spent the day with Bring a Trailer at the historic Woodward Dream Cruise, capturing the sights and sounds of the event.`,
+    credits: `Shot and directed by Simran Dhaliwal at Addo Studios`,
+  },
+  {
+    title: "Nirvana Natura Farms — Kids Beekeeping Experience",
+    tag: "Brand Film",
+    url: "https://youtu.be/bJH75qexgY8",
+    desc: `We visited Nirvana Natura Farms’ kids beekeeping experience and captured the process for them. The goal was to capture the essence of the experience and each of its stages.
+
+Addo Studios happily supports local green initiatives and looks to highlight these businesses through its own practices.`,
+    credits: `Filmed and edited by Simran Dhaliwal
+Produced by Addo Studios
+
+Special thanks to Nirvana Natura Farms for the honey they provided us. Delicious.`,
+  },
+  {
+    title: "Five Head — TIFF Experience",
+    tag: "Event Film",
+    url: "https://youtu.be/rqtsgb5k8r4",
+    desc: `Addo Studios joined the cast and crew of Five Head at TIFF 2026. The goal was to make a fun short video that captured their experience in a unique way, with narration voiced by a voice actor from ElevenLabs.
+
+Five Head is a body horror delight with excellent Canadian talent, entertaining in every shot.`,
+    link: { label: "More about the film", url: "https://www.youtube.com/watch?v=uYtLnEaDoQU" },
+    credits: `Filmed and directed by Simran Dhaliwal`,
+  },
 ];
 /* ===================================================================== */
 
@@ -365,13 +425,19 @@ function slotFor(i, n) {
 
 const reel = document.getElementById("reel");
 VIDEOS.forEach((v, i) => {
-  const id = ytId(v.url), slot = slotFor(i, VIDEOS.length);
+  const id = ytId(v.url), slot = Object.assign({}, slotFor(i, VIDEOS.length));
+  if (v.vertical) {                       // Shorts: a narrower, taller frame in the same spot
+    slot.ar = "4 / 5";
+    const m = slot.col.match(/^(\d+) \/ span (\d+)$/);
+    if (slot.col === "1 / -1") slot.col = "5 / span 4";
+    else if (m && +m[2] > 4) slot.col = (+m[1] + +m[2] - 4) + " / span 4";
+  }
   const art = document.createElement("article");
   art.className = "proj" + (slot.off ? " off" : "");
   art.style.gridColumn = slot.col;
   art.innerHTML = `
     <button class="proj-media" style="aspect-ratio:${slot.ar}">
-      <img loading="lazy" alt="" src="https://i.ytimg.com/vi/${id}/maxresdefault.jpg"
+      <img loading="lazy" alt="" src="https://i.ytimg.com/vi/${id}/${v.vertical ? "oardefault" : "maxresdefault"}.jpg"
         onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${id}/hqdefault.jpg'">
       <span class="slate">Reel ${pad(i + 1)}</span>
       <span class="play">Play</span>
@@ -439,10 +505,17 @@ function openVideo(id, v) {
   (v.desc || "").split(/\n\s*\n/).filter(x => x.trim()).forEach(par => {
     const p = document.createElement("p"); p.textContent = par.trim(); info.appendChild(p);
   });
+  if (v.link && v.link.url) {
+    const a = document.createElement("a"); a.className = "info-link";
+    a.href = v.link.url; a.target = "_blank"; a.rel = "noopener";
+    a.textContent = (v.link.label || "Learn more") + " ↗"; info.appendChild(a);
+  }
   if (v.credits && v.credits.trim()) {
     const c = document.createElement("p"); c.className = "credits"; c.textContent = v.credits.trim(); info.appendChild(c);
   }
   player.scrollTop = 0;
+  frame.classList.toggle("vertical", !!v.vertical);
+  frame.parentElement.classList.toggle("vert", !!v.vertical);
   frame.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1"
     allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen title="${v.title.replace(/"/g, "&quot;")}"></iframe>`;
   player.classList.add("open");

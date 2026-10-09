@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Addo Studios</title>
 <meta name="description" content="Addo Studios — event films, spec commercials and CGI from Toronto.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
 <style>
   /* Layout: dark, grainy "screening room" — editorial 12-column reel with staggered, offset frames */
   :root {
@@ -206,14 +208,52 @@
   }
   .close:hover { background: var(--ink); color: var(--bg); }
 
+
+  /* ---------- MAGIC MOMENT ---------- */
+  .mm {
+    margin-top: clamp(1.6rem, 3.4vw, 2.4rem); display: inline-flex; align-items: center; gap: 1rem; max-width: 100%;
+    padding: .8rem 1.7rem .8rem 1.05rem; border: 1px solid rgba(242,193,78,.5); border-radius: 999px;
+    background: rgba(22,22,22,.6); backdrop-filter: blur(6px); color: var(--ink); font: inherit; text-align: left; cursor: pointer;
+    position: relative; overflow: hidden; isolation: isolate; transition: color .4s, border-color .4s, box-shadow .4s;
+    box-shadow: 0 0 0 0 rgba(242,193,78,0);
+  }
+  .mm[hidden] { display: none; }
+  .mm::before {
+    content: ""; position: absolute; inset: 0; background: var(--honey); border-radius: inherit;
+    transform: scaleX(0); transform-origin: left; transition: transform .45s cubic-bezier(.7,0,.2,1); z-index: -1;
+  }
+  .mm:hover, .mm:focus-visible { color: var(--bg); border-color: var(--honey); outline: none; box-shadow: 0 0 34px rgba(242,193,78,.28); }
+  .mm:hover::before, .mm:focus-visible::before { transform: scaleX(1); }
+  .mm-star { flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; border: 1px solid rgba(242,193,78,.4); }
+  .mm-star i { width: 13px; height: 13px; background: var(--honey); clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+    filter: drop-shadow(0 0 6px var(--honey)); animation: twinkle 2.4s ease-in-out infinite; }
+  .mm:hover .mm-star, .mm:focus-visible .mm-star { border-color: rgba(22,22,22,.35); }
+  .mm:hover .mm-star i, .mm:focus-visible .mm-star i { background: var(--bg); filter: none; }
+  @keyframes twinkle { 0%, 100% { transform: scale(.82) rotate(0deg); opacity: .75; } 50% { transform: scale(1.12) rotate(45deg); opacity: 1; } }
+  .mm-txt { display: grid; gap: .3rem; min-width: 0; }
+  .mm-lbl { font-stretch: 118%; font-weight: 600; font-size: .8rem; letter-spacing: .28em; text-transform: uppercase; color: var(--honey); transition: color .4s; }
+  .mm-sub { font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); transition: color .4s; overflow-wrap: anywhere; }
+  .mm:hover .mm-lbl, .mm:focus-visible .mm-lbl, .mm:hover .mm-sub, .mm:focus-visible .mm-sub { color: var(--bg); }
+  html.js-intro:not(.revealed) .mm { opacity: 0; transform: translateY(12px); }
+  html.revealed .mm { animation: mmIn 1s cubic-bezier(.2,.8,.2,1) .45s both; }
+  @keyframes mmIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  #moment { position: fixed; inset: 0; z-index: 70; background: #000; opacity: 0; visibility: hidden; transition: opacity .45s, visibility 0s linear .45s; }
+  #moment.open { opacity: 1; visibility: visible; transition: opacity .45s; }
+  #moment iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: #000; }
+  #moment .close { z-index: 3; }
+  .moment-tab { position: fixed; z-index: 3; right: 4.4rem; top: calc(1.55rem + env(safe-area-inset-top, 0px)); font-family: var(--mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); text-decoration: none; }
+  .moment-tab:hover { color: var(--ink); }
+  @media (max-width: 760px) { .moment-tab { display: none; } }
+  @media (max-width: 480px) { .mm { padding-right: 1.2rem; gap: .8rem; } .mm-lbl { letter-spacing: .15em; font-size: .74rem; } .mm-sub { font-size: .64rem; } }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
     .marquee-track { animation: none; }
   }
 </style>
 <script>document.documentElement.classList.add("js", "js-intro");</script>
-</head>
-<body class="locked">
+<script>document.body.classList.add("locked")</script>
 
 <!-- ============ INTRO / ENTER SCREEN ============ -->
 <div id="intro">
@@ -245,6 +285,10 @@
     <div>
       <div class="eyebrow"><i></i> Addo Studios · Toronto, ON</div>
       <h1><span class="ln"><span>Stories, shot</span></span><span class="ln"><span>and built</span></span><span class="ln"><span><em>with care.</em></span></span></h1>
+      <button class="mm" id="mmBtn" type="button" hidden>
+        <span class="mm-star" aria-hidden="true"><i></i></span>
+        <span class="mm-txt"><span class="mm-lbl">Magic Moment for the month</span><span class="mm-sub" id="mmSub"></span></span>
+      </button>
     </div>
     <div class="hero-side">
       <p>A Toronto video and 3D studio making films for brands, nonprofits and artists.</p>
@@ -276,6 +320,11 @@
 
 <footer><span>© <span id="yr"></span> Addo Studios</span><span>Toronto, Ontario</span></footer>
 
+<div id="moment" role="dialog" aria-modal="true" aria-label="Magic Moment for the month">
+  <a class="moment-tab" id="momentTab" href="#" target="_blank" rel="noopener">Open in new tab ↗</a>
+  <button class="close" id="momentClose" aria-label="Close Magic Moment">×</button>
+</div>
+
 <div id="player" role="dialog" aria-modal="true" aria-label="Video player">
   <button class="close" id="closeBtn" aria-label="Close video">×</button>
   <div class="player-inner">
@@ -293,6 +342,11 @@
    ===================================================================== */
 const CONTACT_EMAIL = "hello@addostudios.com";
 const CONTACT_PHONE = "416-939-6855";
+
+/* MAGIC MOMENT FOR THE MONTH — the button near the top of the page.
+   Each month: put the new film in the "moments" folder and update this line.
+   Delete the line (or set it to null) to hide the button. */
+const MAGIC_MOMENT = { title: "Stardust, Developed", month: "October 2026", file: "moments/2026-10-stardust.html" };
 
 const VIDEOS = [
   {
@@ -449,7 +503,7 @@ VIDEOS.forEach((v, i) => {
   if (v.desc) p.textContent = v.desc.split(/\n\s*\n/)[0]; else p.remove();
   const media = art.querySelector(".proj-media");
   media.setAttribute("aria-label", "Play " + v.title);
-  media.addEventListener("click", () => openVideo(id, v));
+  media.addEventListener("click", () => { const a=document.createElement("a"); a.href="https://www.youtube.com/watch?v="+id; a.target="_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove(); });
   media.addEventListener("pointermove", e => {
     const r = media.getBoundingClientRect();
     media.style.setProperty("--cx", (e.clientX - r.left) + "px");
@@ -540,6 +594,41 @@ const digits = CONTACT_PHONE.replace(/\D/g, "");
 phone.href = "tel:+1" + digits.slice(-10);
 phone.textContent = `(${digits.slice(-10, -7)}) ${digits.slice(-7, -4)}-${digits.slice(-4)}`;
 document.getElementById("yr").textContent = new Date().getFullYear();
+
+// Magic Moment for the month: full-screen pop-up with the film
+(function () {
+  const mm = typeof MAGIC_MOMENT !== "undefined" ? MAGIC_MOMENT : null;
+  const btn = document.getElementById("mmBtn");
+  if (!mm || !mm.file) return;
+  btn.hidden = false;
+  document.getElementById("mmSub").textContent = [mm.title, mm.month].filter(Boolean).join(" · ");
+  btn.setAttribute("aria-label", "Magic Moment for the month: " + (mm.title || "watch the film"));
+  const box = document.getElementById("moment"), tab = document.getElementById("momentTab");
+  tab.href = mm.file;
+  let back = null, frameEl = null;
+  function open() {
+    back = document.activeElement;
+    frameEl = document.createElement("iframe");
+    frameEl.src = mm.file + "#embedded";
+    frameEl.title = "Magic Moment: " + (mm.title || "");
+    frameEl.setAttribute("allow", "autoplay; fullscreen");
+    box.insertBefore(frameEl, box.firstChild);
+    box.classList.add("open");
+    document.body.classList.add("locked");
+    setTimeout(() => { try { frameEl.focus(); } catch (e) {} }, 300);
+  }
+  function close() {
+    if (!box.classList.contains("open")) return;
+    box.classList.remove("open");
+    document.body.classList.remove("locked");
+    setTimeout(() => { if (frameEl) { frameEl.remove(); frameEl = null; } }, 450);
+    if (back) back.focus();
+  }
+  btn.addEventListener("click", open);
+  document.getElementById("momentClose").addEventListener("click", close);
+  document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+  addEventListener("message", e => { if (e.data === "addo:moment-close") close(); });
+})();
 
 
 /* ---------- background: A, D, D, O roll in from the sides and spell ADDO (very faint) ---------- */
